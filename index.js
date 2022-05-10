@@ -31,7 +31,6 @@ async function run() {
     try {
         await client.connect();
         const productCollection = client.db('smartShop').collection('products');
-        const orderCollection = client.db('smartShop').collection('order');
 
         // login api
         app.post('/login', async (req, res) => {
@@ -50,6 +49,7 @@ async function run() {
             res.send(services);
         });
 
+        //get single product api
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
             console.log(id);
@@ -58,14 +58,14 @@ async function run() {
             res.send(service);
         });
 
-        // POST
+        // upload product api
         app.post('/product', async (req, res) => {
             const newService = req.body;
             const result = await productCollection.insertOne(newService);
             res.send(result);
         });
 
-        // DELETE
+        // single product delete api
         app.delete('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -73,26 +73,28 @@ async function run() {
             res.send(result);
         });
 
-        // Order Collection API
-        app.get('/order', verifyJWT, async (req, res) => {
-            const decodedEmail = req.decoded.email;
-            const email = req.query.email;
-            if (email === decodedEmail) {
-                const query = { email: email };
-                const cursor = orderCollection.find(query);
-                const orders = await cursor.toArray();
-                res.send(orders);
-            }
-            else {
-                res.status(403).send({ message: 'forbidden access' })
-            }
-        })
+        app.put("/product/:id", async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            console.log("from update api", data);
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
 
-        app.post('/order', async (req, res) => {
-            const order = req.body;
-            const result = await orderCollection.insertOne(order);
+            const updateDoc = {
+                $set: {
+                    userName: data.userName,
+                    dataText: data.dataText,
+                },
+            };
+
+            const result = await notesCollection.updateOne(
+                filter,
+                updateDoc,
+                options
+            );
+            // console.log('from put method',id)
             res.send(result);
-        })
+        });
 
     }
     finally {
