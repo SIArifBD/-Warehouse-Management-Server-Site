@@ -52,7 +52,7 @@ async function run() {
         //get single product api
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
+            // console.log(id);
             const query = { _id: ObjectId(id) };
             const service = await productCollection.findOne(query);
             res.send(service);
@@ -73,6 +73,7 @@ async function run() {
             res.send(result);
         });
 
+        //quantity update api
         app.put("/product/:id", async (req, res) => {
             const id = req.params.id;
             const data = req.body;
@@ -82,35 +83,32 @@ async function run() {
 
             const updateDoc = {
                 $set: {
-                    userName: data.userName,
-                    dataText: data.dataText,
+                    name: data.name,
+                    imgUrl: data.imgUrl,
+                    description: data.description,
+                    price: data.price,
+                    quantity: data.quantity,
+                    supplier: data.supplier
                 },
             };
 
-            const result = await notesCollection.updateOne(
+            const result = await productCollection.updateOne(
                 filter,
                 updateDoc,
                 options
             );
-            // console.log('from put method',id)
             res.send(result);
         });
 
     }
     finally {
-
     }
 }
-
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
     res.send('Running Smart-Shop Server');
 });
-
-app.get('/hero', (req, res) => {
-    res.send('Hero meets hero ku')
-})
 
 app.listen(port, () => {
     console.log('Listening to port', port);
