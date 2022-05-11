@@ -70,7 +70,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await productCollection.deleteOne(query);
-            // res.send(result);
+            res.send(result);
         });
 
         //quantity update api
